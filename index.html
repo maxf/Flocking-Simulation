@@ -17,11 +17,11 @@
       <span id="birds"></span>
     </div>
 
-    <script src="js-libs/three.js"></script>
+    <script src="js/three.js"></script>
     <script src="js-libs/Detector.js"></script>
     <script src="js-libs/stats.min.js"></script>
     <script src="js-libs/dat.gui.min.js"></script>
-    <script src="js-libs/GPUComputationRenderer.js"></script>
+    <script src="js/GPUComputationRenderer.js"></script>
     <script src="js-libs/FirstPersonControls.js"></script>
     <script src="js-libs/OrbitControls.js"></script>
     <script src="js-libs/KeyboardState.js"></script>
@@ -64,8 +64,7 @@
      const float PI_2 = PI * 2.0;
 
      float zoneRadius = 35.0;
-     float zoneRadiusSquared = zoneRadius*zoneRadius;
-
+     float zoneRadiusSquared = 1225.0;
      float separationThresh = 0.5;
      float alignmentThresh = 1.0;
 
@@ -312,6 +311,7 @@
 
      var container, stats;
      var camera, scene, renderer, geometry, i, h, color;
+     let controls;
      var mouseX = 0, mouseY = 0;
 
      init();
@@ -409,7 +409,7 @@
      }
 
      function initComputeRenderer() {
-       gpu_allocation = new GPUComputationRenderer( argumentHash, argumentHash, renderer );
+       gpu_allocation = new THREE.GPUComputationRenderer( argumentHash, argumentHash, renderer );
 
        var dtPosition = gpu_allocation.createTexture();
        var dtVelocity = gpu_allocation.createTexture();
