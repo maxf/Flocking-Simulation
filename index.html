@@ -18,12 +18,15 @@
     </div>
 
     <script src="js/three.js"></script>
+    <script src="js/GPUComputationRenderer.js"></script>
+    <script src="js/VRButton.js"></script>
+    <script src="js/OrbitControls.js"></script>
+
+
     <script src="js-libs/Detector.js"></script>
     <script src="js-libs/stats.min.js"></script>
     <script src="js-libs/dat.gui.min.js"></script>
-    <script src="js/GPUComputationRenderer.js"></script>
     <script src="js-libs/FirstPersonControls.js"></script>
-    <script src="js-libs/OrbitControls.js"></script>
     <script src="js-libs/KeyboardState.js"></script>
 
     <!-- fragment shader for bird's position -->
@@ -243,10 +246,10 @@
        var references = new THREE.BufferAttribute( new Float32Array( points * 2 ), 2 );
        var birdVertex = new THREE.BufferAttribute( new Float32Array( points ), 1 );
 
-       this.addAttribute( 'position', vertices );
-       this.addAttribute( 'birdColor', birdColors );
-       this.addAttribute( 'reference', references );
-       this.addAttribute( 'birdVertex', birdVertex );
+       this.setAttribute( 'position', vertices );
+       this.setAttribute( 'birdColor', birdColors );
+       this.setAttribute( 'reference', references );
+       this.setAttribute( 'birdVertex', birdVertex );
 
        var v = 0;
        function vertex_append() {
@@ -319,6 +322,7 @@
 
      function init() {
        container = document.createElement( 'div' );
+       container.setAttribute('id', 'container');
        document.body.appendChild( container );
 
        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
@@ -330,7 +334,7 @@
        renderer = new THREE.WebGLRenderer({antialias:true});
        renderer.setClearColor(0x66C2FF);
        renderer.setSize(window.innerWidth, window.innerHeight);
-       renderer.shadowMapEnabled= true;
+       renderer.shadowMap.enabled= true;
        renderer.shadowMapSoft = true;
 
        controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -340,6 +344,12 @@
        camera.position.y = 600;
        camera.position.z = 600;
        camera.lookAt(scene.position);
+
+       document.getElementById('container').appendChild( VRButton.createButton( renderer ) );
+       renderer.xr.enabled = true;
+       renderer.setAnimationLoop(function () {
+	 renderer.render( scene, camera );
+       });
 
        guiControls = new function(){
          this.rotationX  = 0.0;
@@ -352,14 +362,13 @@
          this.distance = 373;
          this.angle = 1.6;
          this.exponent = 38;
-         this.shadowCameraNear = 34;
-         this.shadowCameraFar = 2635;
-         this.shadowCameraFov = 68;
-         this.shadowCameraVisible=false;
+//         this.shadow.camera.near = 34;
+//         this.shadow.camera.far = 2635;
+//         this.shadow.camera.fov = 68;
+//         this.shadow.camera.visible=false;
          this.shadowMapWidth=512;
          this.shadowMapHeight=512;
-         this.shadowBias=0.00;
-         this.shadowDarkness=0.11;
+//         this.shadow.bias=0.00;
        }
 
        spotLight = new THREE.SpotLight(0xffffff);
@@ -369,12 +378,11 @@
        spotLight.distance = guiControls.distance;
        spotLight.angle = guiControls.angle;
        spotLight.exponent = guiControls.exponent;
-       spotLight.shadowCameraNear = guiControls.shadowCameraNear;
-       spotLight.shadowCameraFar = guiControls.shadowCameraFar;
-       spotLight.shadowCameraFov = guiControls.shadowCameraFov;
-       spotLight.shadowCameraVisible = guiControls.shadowCameraVisible;
-       spotLight.shadowBias = guiControls.shadowBias;
-       spotLight.shadowDarkness = guiControls.shadowDarkness;
+//       spotLight.shadow.camera.near = guiControls.shadow.camera.near;
+//       spotLight.shadow.camera.far = guiControls.shadow.camera.far;
+//       spotLight.shadow.camera.fov = guiControls.shadow.camera.fov;
+//       spotLight.shadow.camera.visible = guiControls.shadow.camera.visible;
+//       spotLight.shadow.bias = guiControls.shadow.bias;
 
        scene.add(spotLight);
        container.appendChild( renderer.domElement );
