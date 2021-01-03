@@ -229,22 +229,22 @@
     <script>
      if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
+     // Get the number of birds from the hash string: #3 => 9 birds
      var hash = document.location.hash.substr( 1 );
      if (hash) hash = parseInt(hash, 0);
-
      var argumentHash = hash || 32;
-     var birds = argumentHash * argumentHash;
+     var nbBirds = argumentHash * argumentHash;
 
-     THREE.BirdGeometry = function () {
-       var triangles = birds * 3;
-       var points = triangles * 3;
+     THREE.BirdGeometry = function (nbBirds) {
+       var nbTriangles = nbBirds * 3;
+       var nbVertices = nbTriangles * 3;
 
        THREE.BufferGeometry.call( this );
 
-       var vertices = new THREE.BufferAttribute( new Float32Array( points * 3 ), 3 );
-       var birdColors = new THREE.BufferAttribute( new Float32Array( points * 3 ), 3 );
-       var references = new THREE.BufferAttribute( new Float32Array( points * 2 ), 2 );
-       var birdVertex = new THREE.BufferAttribute( new Float32Array( points ), 1 );
+       var vertices = new THREE.BufferAttribute( new Float32Array( nbVertices * 3 ), 3 );
+       var birdColors = new THREE.BufferAttribute( new Float32Array( nbVertices * 3 ), 3 );
+       var references = new THREE.BufferAttribute( new Float32Array( nbVertices * 2 ), 2 );
+       var birdVertex = new THREE.BufferAttribute( new Float32Array( nbVertices ), 1 );
 
        this.setAttribute( 'position', vertices );
        this.setAttribute( 'birdColor', birdColors );
@@ -252,27 +252,30 @@
        this.setAttribute( 'birdVertex', birdVertex );
 
        var v = 0;
-       function vertex_append() {
-         for (var i=0; i < arguments.length; i++) {
-           vertices.array[v++] = arguments[i];
+       function vertex_append(vertexPosition) {
+         for (var i=0; i < vertexPosition.length; i++) {
+           vertices.array[v++] = vertexPosition[i];
          }
        }
-       for (var f = 0; f<birds; f++ ) {
-         vertex_append(
+       for (var f = 0; f<nbBirds; f++ ) {
+         vertex_append([
            0, -0, -6,
            0, 1, -15,
-           0, 0, 8);
-         vertex_append(
+           0, 0, 8
+         ]);
+         vertex_append([
            0, 0, -4,
            -6, 0, 0,
-           0, 0, 4);
-         vertex_append(
+           0, 0, 4
+         ]);
+         vertex_append([
            0, 0, 4,
            6, 0, 0,
-           0, 0, -4);
+           0, 0, -4
+         ]);
        }
 
-       for( var v = 0; v < triangles * 3; v++ ) {
+       for( var v = 0; v < nbTriangles * 3; v++ ) {
          var i = ~~(v / 3);
          var x = (i % argumentHash) / argumentHash;
          var y = ~~(i / argumentHash) / argumentHash;
@@ -296,7 +299,7 @@
 
      var bounds = 500, bounds_HALF = bounds / 2;
 
-     document.getElementById('birds').innerText = birds;
+     document.getElementById('birds').innerText = nbBirds;
      function change(n) {
        location.hash = n;
        location.reload();
@@ -331,12 +334,13 @@
        scene.background = new THREE.Color( 0x87ceeb);
 //       scene.fog = new THREE.Fog( 0x87ceeb, 100, 1000 );
 
+/*
        const geometry = new THREE.BoxGeometry(2500, 10, 2500, 30, 1, 30);
        const material = new THREE.MeshPhongMaterial( { color: 0x00FF00 } );
        const floor = new THREE.Mesh( geometry, material );
        floor.position.y = -300;
        scene.add( floor );
-
+*/
 
        renderer = new THREE.WebGLRenderer({antialias:true});
        renderer.setClearColor(0x66C2FF);
@@ -350,30 +354,15 @@
        camera.position.x = 600;
        camera.position.y = 0;
        camera.position.z = 400;
+
+       scene.position.x = -100;
+       scene.position.y =  100;
+       scene.position.z = -100;
+
        camera.lookAt(scene.position);
 
        document.getElementById('container').appendChild( VRButton.createButton( renderer ) );
        renderer.xr.enabled = true;
-
-       guiControls = new function(){
-         this.rotationX  = 0.0;
-         this.rotationY  = 0.0;
-         this.rotationZ  = 0.0;
-         this.lightX = 190;
-         this.lightY = 470;
-         this.lightZ = 190;
-         this.intensity = 100;
-         this.distance = 373;
-         this.angle = 1.6;
-         this.exponent = 38;
-//         this.shadow.camera.near = 34;
-//         this.shadow.camera.far = 2635;
-//         this.shadow.camera.fov = 68;
-//         this.shadow.camera.visible=false;
-         this.shadowMapWidth=512;
-         this.shadowMapHeight=512;
-//         this.shadow.bias=0.00;
-       }
 
        const spotLight = new THREE.SpotLight( 0xffffff );
        spotLight.position.set( 100, 1000, 100 );
@@ -417,11 +406,6 @@
          uniform_velocity.freedom_distance.value = controller_variables.freedom;
        };
        new_values_update();
-
-       // gui.add( controller_variables, "seperation", 0.0, 100.0, 1.0 ).onChange( new_values_update );
-       // gui.add( controller_variables, "alignment", 0.0, 100, 0.001 ).onChange( new_values_update );
-       // gui.add( controller_variables, "cohesion", 0.0, 100, 0.025 ).onChange( new_values_update );
-       // gui.close();
 
        initBirds();
      }
@@ -467,7 +451,7 @@
      }
 
      function initBirds() {
-       var geometry = new THREE.BirdGeometry();
+       var geometry = new THREE.BirdGeometry(nbBirds);
 
        // For Vertex and Fragment
        uniform_bird = {
@@ -501,7 +485,7 @@
 
        for ( var k = 0, kl = theArray.length; k < kl; k += 4 ) {
 
-         var x = Math.random() * 100 ;
+         var x = Math.random() * 100;
          var y = Math.random() * 100;
          var z = Math.random() * 100;
 
