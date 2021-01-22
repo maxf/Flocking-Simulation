@@ -10,6 +10,9 @@
        overflow: hidden;
        cursor: pointer;
      }
+     #VRButton {
+       background: #f00!important;
+     }
     </style>
   </head>
   <body>
@@ -334,13 +337,13 @@
        scene.background = new THREE.Color( 0x87ceeb);
 //       scene.fog = new THREE.Fog( 0x87ceeb, 100, 1000 );
 
-/*
+
        const geometry = new THREE.BoxGeometry(2500, 10, 2500, 30, 1, 30);
        const material = new THREE.MeshPhongMaterial( { color: 0x00FF00 } );
        const floor = new THREE.Mesh( geometry, material );
        floor.position.y = -300;
        scene.add( floor );
-*/
+
 
        renderer = new THREE.WebGLRenderer({antialias:true});
        renderer.setClearColor(0x66C2FF);
