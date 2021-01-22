@@ -233,4 +233,4 @@ velocity += normalize(dir) * f;
 Found a bug or have a suggestion? Feel free to create an issue or make a pull request!
 
 ## Know the Developer
-- Ask him out for a cup of coffee (preferably female gender), find his blog [here](https://techcentaur.github.io/space/).
+- Original developer's [blog](https://techcentaur.github.io/space/).
